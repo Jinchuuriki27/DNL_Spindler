@@ -49,7 +49,7 @@ table{width:100%;border-collapse:collapse;margin:16px 0}th{background:var(--blue
 /* VIDEO OVERLAY */
 .video-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);z-index:2000;align-items:center;justify-content:center}.video-overlay.show{display:flex}.video-popup{background:var(--card);border-radius:16px;overflow:hidden;width:90%;max-width:800px;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:popIn .3s ease}@keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}.video-popup-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#F3F4F6}.video-popup-header span{font-weight:600;font-size:.95rem}.video-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-light);padding:0 4px}.video-close:hover{color:var(--coral)}.video-popup iframe{width:100%;height:450px;border:none;display:block}
 /* ZOOM OVERLAY */
-.zoom-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.9);z-index:2000;overflow:auto;padding:20px;cursor:zoom-out}.zoom-overlay.show{display:block}.zoom-overlay img{display:block;margin:40px auto;width:auto;max-width:90vw;max-height:90vh;object-fit:contain;cursor:zoom-out}.zoom-close{position:fixed;top:20px;right:24px;z-index:2001;background:rgba(255,255,255,.9);color:var(--text);border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.3)}.zoom-close:hover{background:#fff}
+.zoom-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);z-index:2000;align-items:center;justify-content:center;overflow:hidden}.zoom-overlay.show{display:flex}.zoom-overlay .zoom-stage{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:100%;overflow:hidden}.zoom-overlay img{display:block;max-width:88vw;max-height:88vh;width:auto;height:auto;object-fit:contain;transform-origin:center center;transition:transform .15s ease;cursor:grab;user-select:none}.zoom-overlay img.grabbing{cursor:grabbing}.zoom-close{position:fixed;top:18px;right:22px;z-index:2001;background:rgba(255,255,255,.92);color:var(--text);border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.3);display:none}.zoom-close:hover{background:#fff}.zoom-hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:6px 16px;border-radius:20px;font-size:.82rem;pointer-events:none;z-index:2001;display:none}
 .zoom-trigger{position:relative;cursor:zoom-in}.zoom-trigger::after{content:'\1F50D Cliquez pour agrandir';position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:16px;font-size:.75rem;opacity:0;transition:.2s;pointer-events:none}.zoom-trigger:hover::after{opacity:1}
 /* BACK NAV */
 .back-float{display:none;position:fixed;top:68px;right:24px;z-index:999;background:var(--coral);color:#fff;border:none;padding:6px 16px;border-radius:20px;font-size:.85rem;font-weight:600;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2);animation:fadeIn .3s}.back-float:hover{background:#D4604A}
@@ -134,8 +134,9 @@ table{width:100%;border-collapse:collapse;margin:16px 0}th{background:var(--blue
 </head>
 <body>
 <div class="video-overlay" id="videoOverlay" onclick="if(event.target===this)closeVideo()"><div class="video-popup"><div class="video-popup-header"><span id="videoTitle">Vidéo</span><button class="video-close" onclick="closeVideo()">✕</button></div><iframe id="videoFrame" src="" allow="autoplay; fullscreen; encrypted-media" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div></div>
-<div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()"><img id="zoomImg" src=""></div>
-<button class="zoom-close" id="zoomCloseBtn" onclick="closeZoom()" style="display:none">✕ Fermer</button>
+<div class="zoom-overlay" id="zoomOverlay"><div class="zoom-stage" id="zoomStage"><img id="zoomImg" src="" alt=""></div></div>
+<button class="zoom-close" id="zoomCloseBtn" onclick="closeZoom()">✕ Fermer</button>
+<div class="zoom-hint" id="zoomHint">🖱 Molette pour zoomer · Cliquer-glisser pour déplacer · <kbd style="background:rgba(255,255,255,.2);padding:1px 5px;border-radius:3px">Échap</kbd> pour fermer</div>
 <div class="progress-bar" id="progressBar"></div>
 <button class="back-float" id="backBtn" onclick="goBack()">❮ Retour</button>
 
@@ -197,9 +198,9 @@ table{width:100%;border-collapse:collapse;margin:16px 0}th{background:var(--blue
   <div class="card">
     <table style="table-layout:fixed"><thead><tr><th style="width:33.33%">1<sup>er</sup> indice</th><th style="width:33.33%">2<sup>e</sup> indice</th><th style="width:33.33%">3<sup>e</sup> indice</th></tr></thead>
     <tbody><tr>
-      <td style="text-align:center;padding:8px;vertical-align:top"><div class="indice-card"><img src="images/UD2_slide3_img1.png" style="width:100%;display:block;border-radius:10px 10px 0 0" alt="1er indice" cursor:zoom-in" onclick="event.stopPropagation();openZoom(this.src)"></cursor:zoom-in><div class="card-content"><span style="color:var(--green);font-size:.85rem"></span><div class="indice-caption"><span class="doc-source"><a href="https://www.letudiant.fr/college/reussir-au-college-de-la-6e-a-la-3e/cinq-bons-reflexes-pour-reussir-son-expose-au-college.html" target="_blank">Source : letudiant.fr</a></span></div></div></td>
-      <td style="text-align:center;padding:8px;vertical-align:top"><div class="indice-card"><img src="images/UD2_slide3_img2.png" style="width:100%;display:block;border-radius:10px 10px 0 0" alt="2e indice" cursor:zoom-in" onclick="event.stopPropagation();openZoom(this.src)"></cursor:zoom-in><div class="indice-caption"><span class="doc-source"><a href="https://www.ird.fr/sites/ird_fr/files/2020-02/Culture%20scientifique%20au%20Cameroun.jpg" target="_blank">Source : ird.fr</a></span></div></div></td>
-      <td style="text-align:center;padding:8px;vertical-align:top"><div class="indice-card"><img src="images/UD2_slide3_img3.png" style="width:100%;display:block;border-radius:10px 10px 0 0" alt="3e indice" cursor:zoom-in" onclick="event.stopPropagation();openZoom(this.src)"></cursor:zoom-in><div class="indice-caption"><span class="doc-source"><a href="https://www.ird.fr/sites/ird_fr/files/2020-02/Culture%20scientifique%20au%20Cameroun.jpg" target="_blank">Source : ird.fr</a></span></div></div></td>
+      <td style="text-align:center;padding:8px;vertical-align:top"><div class="indice-card"><img src="images/UD2_slide3_img1.png" style="width:100%;display:block;border-radius:10px 10px 0 0;cursor:zoom-in" alt="1er indice" onclick="event.stopPropagation();openZoom(this.src)"><div style="padding:5px 8px 2px;font-size:.78rem;color:var(--text-light);font-style:italic">🔍 Appuyez sur l'image pour l'agrandir</div><div class="card-content"><span style="color:var(--green);font-size:.85rem"></span><div class="indice-caption"><span class="doc-source"><a href="https://www.letudiant.fr/college/reussir-au-college-de-la-6e-a-la-3e/cinq-bons-reflexes-pour-reussir-son-expose-au-college.html" target="_blank">Source : letudiant.fr</a></span></div></div></div></td>
+      <td style="text-align:center;padding:8px;vertical-align:top"><div class="indice-card"><img src="images/UD2_slide3_img2.png" style="width:100%;display:block;border-radius:10px 10px 0 0;cursor:zoom-in" alt="2e indice" onclick="event.stopPropagation();openZoom(this.src)"><div style="padding:5px 8px 2px;font-size:.78rem;color:var(--text-light);font-style:italic">🔍 Appuyez sur l'image pour l'agrandir</div><div class="indice-caption"><span class="doc-source"><a href="https://www.ird.fr/sites/ird_fr/files/2020-02/Culture%20scientifique%20au%20Cameroun.jpg" target="_blank">Source : ird.fr</a></span></div></div></td>
+      <td style="text-align:center;padding:8px;vertical-align:top"><div class="indice-card"><img src="images/UD2_slide3_img3.png" style="width:100%;display:block;border-radius:10px 10px 0 0;cursor:zoom-in" alt="3e indice" onclick="event.stopPropagation();openZoom(this.src)"><div style="padding:5px 8px 2px;font-size:.78rem;color:var(--text-light);font-style:italic">🔍 Appuyez sur l'image pour l'agrandir</div><div class="indice-caption"><span class="doc-source"><a href="https://www.ird.fr/sites/ird_fr/files/2020-02/Culture%20scientifique%20au%20Cameroun.jpg" target="_blank">Source : ird.fr</a></span></div></div></td>
 
     </tr></tbody></table>
     <div style="margin-top:20px">
@@ -246,7 +247,7 @@ table{width:100%;border-collapse:collapse;margin:16px 0}th{background:var(--blue
   <div class="card card-coral" id="doc1-anchor">
     <div style="color:var(--coral);font-weight:700;font-size:1rem;margin-bottom:8px">Document 1</div>
     <div style="border-radius:10px;overflow:hidden;text-align:center;background:#4A90D9">
-      <img src="images/UD2_slide5_img1.png" style="width:100%;max-width:700px;height:auto;display:block;margin:0 auto;border-radius:10px" alt="Si le monde était un village de 100 personnes" onclick="event.stopPropagation();openZoom(this.src)">
+      <img src="images/UD2_slide5_img1.png" style="width:100%;max-width:700px;height:auto;display:block;margin:0 auto;border-radius:10px;cursor:zoom-in" alt="Si le monde était un village de 100 personnes" onclick="event.stopPropagation();openZoom(this.src)">
     </div>
     <p class="doc-source">Source : Le petit quotidien, Bayard presse</p>
   </div>
@@ -824,8 +825,118 @@ function openVideo(p,id,t){let s='';if(p==='youtube')s='https://www.youtube-noco
 function closeVideo(){document.getElementById('videoOverlay').classList.remove('show');document.getElementById('videoFrame').src=''}
 
 // ===== ZOOM =====
-function openZoom(src){document.getElementById('zoomImg').src=src;document.getElementById('zoomOverlay').classList.add('show');document.getElementById('zoomCloseBtn').style.display='block'}
-function closeZoom(){document.getElementById('zoomOverlay').classList.remove('show');document.getElementById('zoomCloseBtn').style.display='none'}
+(function(){
+  var ov,img,hint,closeBtn;
+  var scale=1,minScale=1,maxScale=6;
+  var tx=0,ty=0;          // translation courante
+  var dragging=false,startX,startY,startTx,startTy;
+
+  function applyTransform(){
+    img.style.transform='scale('+scale+') translate('+tx+'px,'+ty+'px)';
+  }
+
+  function clampTranslation(){
+    // Calculer les limites de déplacement selon l'échelle
+    var rect=img.getBoundingClientRect();
+    var ovRect=ov.getBoundingClientRect();
+    var maxTx=Math.max(0,(rect.width -ovRect.width) /2)/scale;
+    var maxTy=Math.max(0,(rect.height-ovRect.height)/2)/scale;
+    tx=Math.max(-maxTx,Math.min(maxTx,tx));
+    ty=Math.max(-maxTy,Math.min(maxTy,ty));
+  }
+
+  function resetZoom(){scale=1;tx=0;ty=0;applyTransform();}
+
+  window.openZoom=function(src){
+    ov=document.getElementById('zoomOverlay');
+    img=document.getElementById('zoomImg');
+    hint=document.getElementById('zoomHint');
+    closeBtn=document.getElementById('zoomCloseBtn');
+
+    img.src=src;
+    resetZoom();
+    img.style.transition='transform .15s ease';
+    ov.classList.add('show');
+    closeBtn.style.display='block';
+    hint.style.display='block';
+
+    // --- Zoom molette ---
+    ov.onwheel=function(e){
+      e.preventDefault();
+      var delta=e.deltaY<0?1.15:0.87;
+      var newScale=Math.min(maxScale,Math.max(minScale,scale*delta));
+      scale=newScale;
+      clampTranslation();
+      applyTransform();
+    };
+
+    // --- Drag pour déplacer ---
+    img.onmousedown=function(e){
+      if(scale<=1)return;
+      dragging=true;
+      startX=e.clientX; startY=e.clientY;
+      startTx=tx; startTy=ty;
+      img.classList.add('grabbing');
+      img.style.transition='none';
+      e.preventDefault();
+    };
+    window.onmousemove=function(e){
+      if(!dragging)return;
+      tx=startTx+(e.clientX-startX)/scale;
+      ty=startTy+(e.clientY-startY)/scale;
+      clampTranslation();
+      applyTransform();
+    };
+    window.onmouseup=function(){
+      if(dragging){dragging=false;img.classList.remove('grabbing');img.style.transition='transform .15s ease';}
+    };
+
+    // --- Touch pinch-zoom ---
+    var lastDist=null;
+    ov.ontouchstart=function(e){
+      if(e.touches.length===2){
+        lastDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      } else if(e.touches.length===1 && scale>1){
+        dragging=true;
+        startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+        startTx=tx; startTy=ty;
+      }
+    };
+    ov.ontouchmove=function(e){
+      e.preventDefault();
+      if(e.touches.length===2 && lastDist){
+        var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+        scale=Math.min(maxScale,Math.max(minScale,scale*(d/lastDist)));
+        lastDist=d;
+        clampTranslation();
+        applyTransform();
+      } else if(e.touches.length===1 && dragging){
+        tx=startTx+(e.touches[0].clientX-startX)/scale;
+        ty=startTy+(e.touches[0].clientY-startY)/scale;
+        clampTranslation();
+        applyTransform();
+      }
+    };
+    ov.ontouchend=function(e){
+      if(e.touches.length<2)lastDist=null;
+      if(e.touches.length===0)dragging=false;
+    };
+  };
+
+  window.closeZoom=function(){
+    var ov2=document.getElementById('zoomOverlay');
+    var cb=document.getElementById('zoomCloseBtn');
+    var h=document.getElementById('zoomHint');
+    ov2.classList.remove('show');
+    if(cb)cb.style.display='none';
+    if(h)h.style.display='none';
+    var im=document.getElementById('zoomImg');
+    if(im){im.style.transform='';im.src='';}
+    dragging=false;
+    if(ov2){ov2.onwheel=null;}
+    window.onmousemove=null; window.onmouseup=null;
+  };
+})();
 
 // ===== MATCHING (Act 1 Comp Det) =====
 function checkMatch(){let c=0;document.querySelectorAll('.match-input').forEach(inp=>{inp.style.borderColor='';inp.style.background='';const v=inp.value.trim().toLowerCase(),a=inp.dataset.correct;if(v===a){inp.style.borderColor='var(--green)';inp.style.background='var(--green-light)';c++}else if(v){inp.style.borderColor='#E57373';inp.style.background='var(--red-light)'}});const f=document.getElementById('matchFeedback');f.classList.add('show');f.className=c===5?'feedback show success':'feedback show partial';f.textContent=c===5?'Bravo ! Tout est correct !':c+'/5 correctes.'}
@@ -1085,4 +1196,3 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </script>
 </body>
 </html>
-
